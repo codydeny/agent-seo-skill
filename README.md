@@ -1,6 +1,6 @@
 # agent-seo
 
-**Make your website work for agents.** `/review` audits how AI crawlers,
+**Make your website work for agents.** `/agent-seo:review` audits how AI crawlers,
 answer engines (ChatGPT, Claude, Perplexity, Gemini, Copilot) and user-driven agents
 discover, read, cite, and act on a site — then fixes it in the codebase.
 
@@ -12,12 +12,12 @@ twins *and* a robots.txt that blocks ClaudeBot). This harness finds both.
 ## What it does
 
 ```
-/review                                      # in a site repo: detects framework, deployed URL, dev server
-/review --url https://example.com            # audit a deployed site (works with no codebase too)
-/review --url http://localhost:4321          # audit a local build (edge checks auto-SKIP)
-/review --fix                                # audit, then implement fixes in this repo, re-verify
-/review --deep --write                       # + agent-task walkthrough, saves AGENT-SEO.md
-/review status                               # re-probe and diff against the ledger
+/agent-seo:review                                      # in a site repo: detects framework, deployed URL, dev server
+/agent-seo:review --url https://example.com            # audit a deployed site (works with no codebase too)
+/agent-seo:review --url http://localhost:4321          # audit a local build (edge checks auto-SKIP)
+/agent-seo:review --fix                                # audit, then implement fixes in this repo, re-verify
+/agent-seo:review --deep --write                       # + agent-task walkthrough, saves AGENT-SEO.md
+/agent-seo:review status                               # re-probe and diff against the ledger
 ```
 
 Three modes, resolved automatically by `scripts/detect-target.sh`:
