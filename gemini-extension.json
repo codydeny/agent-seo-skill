@@ -1,6 +1,6 @@
 {
   "name": "agent-dx",
-  "description": "Review a repository for issues that hurt coding agents and produce a prioritized fix list.",
+  "description": "Audit and fix a website's agent DX for AI crawlers and agents.",
   "version": "0.1.0",
   "contextFileName": "AGENTS.md"
 }

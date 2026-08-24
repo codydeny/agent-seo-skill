@@ -2,7 +2,7 @@
   "name": "agent-dx",
   "displayName": "Agent DX Review",
   "version": "0.1.0",
-  "description": "Review a repository for issues that hurt coding agents (Claude Code, Codex, Cursor, Antigravity) and produce a prioritized fix list.",
+  "description": "Audit and fix a website's agent DX: how AI crawlers, answer engines, and agents discover, read, cite, and act on it. Live probe + codebase fixes, scored across 6 pillars.",
   "author": {
     "name": "Puneet Bhatt",
     "url": "https://github.com/codydeny"
@@ -10,5 +10,14 @@
   "homepage": "https://github.com/codydeny/agent-dx-harness",
   "repository": "https://github.com/codydeny/agent-dx-harness",
   "license": "MIT",
-  "keywords": ["agent-dx", "developer-experience", "code-review", "agents.md", "harness"]
+  "keywords": [
+    "agent-dx",
+    "aeo",
+    "geo",
+    "llms-txt",
+    "markdown-for-agents",
+    "ai-crawlers",
+    "schema",
+    "mcp"
+  ]
 }
