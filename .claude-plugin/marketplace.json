@@ -1,0 +1,20 @@
+{
+  "name": "agent-dx-harness",
+  "owner": {
+    "name": "Puneet Bhatt",
+    "url": "https://github.com/codydeny"
+  },
+  "metadata": {
+    "description": "Agent developer-experience review for coding agents",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "agent-dx",
+      "source": "./",
+      "description": "Find and prioritize agent DX issues in a repo (/agent-dx:agent-dx-review)",
+      "version": "0.1.0",
+      "strict": true
+    }
+  ]
+}

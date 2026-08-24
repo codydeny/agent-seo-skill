@@ -1,0 +1,16 @@
+{
+  "name": "agent-dx",
+  "displayName": "Agent DX Review",
+  "description": "Review a repository for issues that hurt coding agents and produce a prioritized fix list.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Puneet Bhatt",
+    "url": "https://github.com/codydeny"
+  },
+  "homepage": "https://github.com/codydeny/agent-dx-harness",
+  "repository": "https://github.com/codydeny/agent-dx-harness",
+  "license": "MIT",
+  "keywords": ["agent-dx", "developer-experience", "code-review", "agents.md", "harness"],
+  "skills": "./skills/",
+  "commands": "./commands/"
+}

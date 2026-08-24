@@ -1,0 +1,6 @@
+{
+  "name": "agent-dx",
+  "description": "Review a repository for issues that hurt coding agents and produce a prioritized fix list.",
+  "version": "0.1.0",
+  "contextFileName": "AGENTS.md"
+}
