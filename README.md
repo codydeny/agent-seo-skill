@@ -69,7 +69,7 @@ Fetch and follow the instructions in https://raw.githubusercontent.com/codydeny/
 Already have a local copy? Paste this instead:
 
 ```
-Read and follow ~/agent-seo/INSTALL.md — install for every agent harness on this machine and verify each one.
+Read and follow ~/agent-seo-skill/INSTALL.md — install for every agent harness on this machine and verify each one.
 ```
 
 `INSTALL.md` detects which harnesses are present, installs for each, verifies, and reports.
@@ -78,28 +78,28 @@ Read and follow ~/agent-seo/INSTALL.md — install for every agent harness on th
 
 **Claude Code**
 ```bash
-git clone https://github.com/codydeny/agent-seo ~/agent-seo
-claude plugin marketplace add ~/agent-seo
-claude plugin install agent-seo@agent-seo
+git clone https://github.com/codydeny/agent-seo-skill ~/agent-seo-skill
+claude plugin marketplace add ~/agent-seo-skill
+claude plugin install agent-seo@agent-seo-skill
 ```
-Then in a new session: `/agent-seo:review`. (One-off / live development without installing: `claude --plugin-dir ~/agent-seo`.) Claude Code caches the plugin per version — after pulling changes run `claude plugin marketplace update agent-seo && claude plugin update agent-seo@agent-seo`; it only refreshes when the version in `plugin.json` changed.
+Then in a new session: `/agent-seo:review`. (One-off / live development without installing: `claude --plugin-dir ~/agent-seo-skill`.) Claude Code caches the plugin per version — after pulling changes run `claude plugin marketplace update agent-seo-skill && claude plugin update agent-seo@agent-seo-skill`; it only refreshes when the version in `plugin.json` changed.
 
 **Cursor**
 ```bash
-git clone https://github.com/codydeny/agent-seo ~/agent-seo
-ln -sfn ~/agent-seo ~/.cursor/plugins/local/agent-seo
+git clone https://github.com/codydeny/agent-seo-skill ~/agent-seo-skill
+ln -sfn ~/agent-seo-skill ~/.cursor/plugins/local/agent-seo
 ```
 Reload Cursor ("Developer: Reload Window"); `skills/` is auto-discovered.
 
 **Codex**
 ```bash
-git clone https://github.com/codydeny/agent-seo ~/.codex/agent-seo
-mkdir -p ~/.agents/skills && ln -s ~/.codex/agent-seo/skills/review ~/.agents/skills/review
+git clone https://github.com/codydeny/agent-seo-skill ~/.codex/agent-seo-skill
+mkdir -p ~/.agents/skills && ln -s ~/.codex/agent-seo-skill/skills/review ~/.agents/skills/review
 ```
 
 **Antigravity** (per project)
 ```bash
-mkdir -p .agent/skills && ln -s ~/agent-seo/skills/review .agent/skills/review
+mkdir -p .agent/skills && ln -s ~/agent-seo-skill/skills/review .agent/skills/review
 ```
 Optionally add `.agent/workflows/review.md` containing: `Read and follow .agent/skills/review/SKILL.md. Arguments: $ARGUMENTS`.
 
@@ -112,7 +112,7 @@ gemini extensions install https://github.com/codydeny/agent-seo-skill
 
 ### Uninstall
 ```bash
-claude plugin uninstall agent-seo@agent-seo && claude plugin marketplace remove agent-seo
+claude plugin uninstall agent-seo@agent-seo-skill && claude plugin marketplace remove agent-seo-skill
 rm ~/.cursor/plugins/local/agent-seo ~/.agents/skills/review
 ```
 
