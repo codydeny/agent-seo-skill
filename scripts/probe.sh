@@ -11,22 +11,24 @@ shift || true
 while [ $# -gt 0 ]; do case "$1" in --pages) PAGES="$2"; shift;; esac; shift; done
 
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
+LOCAL=0; echo "$BASE" | grep -qE '^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])' && LOCAL=1
 UA_DEFAULT="Mozilla/5.0 (compatible; agent-dx-probe/0.1)"
 CURL="curl -sS -L --max-time 20 --max-redirs 5"
 
 out() { printf '%s\t%s\t%s\n' "$1" "$2" "$3"; }
 fetch() { # fetch <url> <outfile> [extra curl args...] -> prints "code content-type time"
   local u="$1" f="$2"; shift 2
-  $CURL -A "$UA_DEFAULT" "$@" -o "$f" -w '%{http_code} %{content_type} %{time_total} %{size_download}' "$u" 2>/dev/null || echo "000 - 0 0"
+  $CURL -A "$UA_DEFAULT" "$@" -o "$f" -w '%{http_code} %{time_total} %{size_download} %{content_type}' "$u" 2>/dev/null || echo "000 0 0 -"
 }
 has_tag() { grep -qiE "$1" "$2"; }
 
 echo "# agent-dx probe of $BASE — $(date -u +%Y-%m-%dT%H:%MZ)"
+[ "$LOCAL" = 1 ] && echo "# LOCAL target: edge-dependent checks (bot access/WAF, HSTS, TTFB, CDN-managed robots, Cloudflare md conversion) are SKIP — re-run against the deployed URL for those"
 
 # ---------- 1. Home page basics ----------
-read -r HCODE HTYPE HTIME HSIZE <<<"$(fetch "$BASE/" "$T/home.html")"
+read -r HCODE HTIME HSIZE HTYPE <<<"$(fetch "$BASE/" "$T/home.html")"
 [ "$HCODE" = 200 ] && out home.status PASS "$HCODE in ${HTIME}s, ${HSIZE}B" || out home.status FAIL "HTTP $HCODE"
-awk -v t="$HTIME" 'BEGIN{exit !(t>1.0)}' && out home.ttfb WARN "total ${HTIME}s (>1s; crawlers time out)" || out home.ttfb PASS "${HTIME}s"
+if [ "$LOCAL" = 1 ]; then out home.ttfb SKIP "local"; elif awk -v t="$HTIME" 'BEGIN{exit !(t>1.0)}'; then out home.ttfb WARN "total ${HTIME}s (>1s; crawlers time out)"; else out home.ttfb PASS "${HTIME}s"; fi
 
 # JS-only shell?
 TEXT_LEN=$(sed -e 's/<script[^>]*>.*<\/script>//gI' -e 's/<style[^>]*>.*<\/style>//gI' -e 's/<[^>]*>//g' "$T/home.html" | tr -s ' \n\t' ' ' | wc -c | tr -d ' ')
@@ -48,7 +50,7 @@ has_tag 'lang="' "$T/home.html" && out html.lang PASS "" || out html.lang WARN "
 # ---------- 2. Response headers ----------
 $CURL -A "$UA_DEFAULT" -D "$T/h.txt" -o /dev/null "$BASE/" 2>/dev/null
 hdr() { grep -i "^$1:" "$T/h.txt" | head -1 | tr -d '\r'; }
-[ -n "$(hdr strict-transport-security)" ] && out hdr.hsts PASS "" || out hdr.hsts WARN "no HSTS"
+[ "$LOCAL" = 1 ] && out hdr.hsts SKIP "local" || { [ -n "$(hdr strict-transport-security)" ] && out hdr.hsts PASS "" || out hdr.hsts WARN "no HSTS"; }
 [ -n "$(hdr content-signal)" ] && out hdr.content-signal INFO "$(hdr content-signal)" || true
 [ -n "$(hdr link)" ] && out hdr.link INFO "$(hdr link | cut -c1-160)" || true
 [ -n "$(hdr x-robots-tag)" ] && out hdr.x-robots INFO "$(hdr x-robots-tag)" || true
@@ -58,7 +60,7 @@ hdr() { grep -i "^$1:" "$T/h.txt" | head -1 | tr -d '\r'; }
 check_file() { # id path expected-type-regex
   local id="$1" p="$2" want="$3" f
   f="$T/$(echo "$p" | tr '/.' '__')"
-  read -r c ct t s <<<"$(fetch "$BASE$p" "$f")"
+  read -r c t s ct <<<"$(fetch "$BASE$p" "$f")"
   if [ "$c" = 200 ] && echo "$ct" | grep -qiE "$want"; then out "$id" PASS "$c $ct ${s}B"
   elif [ "$c" = 200 ]; then out "$id" FAIL "200 but content-type '$ct' (wanted $want) — probably SPA shell/HTML fallback"
   else out "$id" FAIL "HTTP $c"; fi
@@ -73,7 +75,7 @@ check_file security.txt /.well-known/security.txt 'text/plain'
 SM=$(grep -i '^sitemap:' "$T/_robots_txt" 2>/dev/null | head -1 | awk '{print $2}' | tr -d '\r')
 [ -z "$SM" ] && for cand in /sitemap.xml /sitemap-index.xml /sitemap_index.xml; do c=$($CURL -o /dev/null -w '%{http_code}' "$BASE$cand"); [ "$c" = 200 ] && SM="$BASE$cand" && break; done
 if [ -n "$SM" ]; then
-  read -r c ct t s <<<"$(fetch "$SM" "$T/sitemap.xml")"
+  read -r c t s ct <<<"$(fetch "$SM" "$T/sitemap.xml")"
   if [ "$c" = 200 ] && echo "$ct" | grep -qiE 'xml'; then
     N=$(grep -o '<loc>' "$T/sitemap.xml" | wc -l | tr -d ' '); LM=$(grep -o '<lastmod>' "$T/sitemap.xml" | wc -l | tr -d ' ')
     out sitemap PASS "$SM ($N loc, $LM lastmod)"
@@ -109,7 +111,8 @@ if [ -f "$T/_robots_txt" ] && [ "$(cat "$T/_robots_txt.code")" = 200 ]; then
 fi
 
 # ---------- 5. Bot access (WAF/challenge) ----------
-for ua in "Mozilla/5.0 (compatible; GPTBot/1.0; +https://openai.com/gptbot)" "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" "Mozilla/5.0 (compatible; ChatGPT-User/1.0; +https://openai.com/bot)" "Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)" "Mozilla/5.0 (compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot)" "Claude-User/1.0"; do
+[ "$LOCAL" = 1 ] && out access.bots SKIP "local — WAF/CDN not in path" 
+[ "$LOCAL" = 0 ] && for ua in "Mozilla/5.0 (compatible; GPTBot/1.0; +https://openai.com/gptbot)" "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" "Mozilla/5.0 (compatible; ChatGPT-User/1.0; +https://openai.com/bot)" "Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)" "Mozilla/5.0 (compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot)" "Claude-User/1.0"; do
   name=$(echo "$ua" | grep -oE '[A-Za-z-]+(Bot|User)' | head -1)
   c=$($CURL -A "$ua" -o "$T/ua.html" -w '%{http_code}' "$BASE/" 2>/dev/null)
   if [ "$c" = 200 ] && ! grep -qiE 'cf-challenge|Just a moment|Checking your browser|__cf_chl|captcha' "$T/ua.html"; then out "access.$name" PASS "200"; else out "access.$name" FAIL "HTTP $c or challenge page"; fi
@@ -124,7 +127,7 @@ MDOK=0; MDN=0; ERR404=0; N=0; NOLD=0; MULTIH1=0
 for u in $PAGELIST; do
   [ "$u" = "$BASE" ] || [ "$u" = "$BASE/" ] && continue
   N=$((N+1))
-  read -r c ct t s <<<"$(fetch "$u" "$T/p.html")"
+  read -r c t s ct <<<"$(fetch "$u" "$T/p.html")"
   [ "$c" != 200 ] && ERR404=$((ERR404+1)) && continue
   grep -qi 'application/ld+json' "$T/p.html" || NOLD=$((NOLD+1))
   [ "$(grep -oiE '<h1[ >]' "$T/p.html" | wc -l | tr -d ' ')" != 1 ] && MULTIH1=$((MULTIH1+1))

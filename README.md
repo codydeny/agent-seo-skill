@@ -12,23 +12,34 @@ twins *and* a robots.txt that blocks ClaudeBot). This harness finds both.
 ## What it does
 
 ```
-/agent-dx-review --url https://example.com            # audit + scored report
-/agent-dx-review --url https://example.com --fix      # audit, then implement fixes in this repo
+/agent-dx-review                                      # in a site repo: detects framework, deployed URL, dev server
+/agent-dx-review --url https://example.com            # audit a deployed site (works with no codebase too)
+/agent-dx-review --url http://localhost:4321          # audit a local build (edge checks auto-SKIP)
+/agent-dx-review --fix                                # audit, then implement fixes in this repo, re-verify
 /agent-dx-review --deep --write                       # + agent-task walkthrough, saves AGENT-DX.md
 /agent-dx-review status                               # re-probe and diff against the ledger
 ```
 
-1. **Probe** — `scripts/probe.sh` (bash + curl, no deps) runs ~40 deterministic live
+Three modes, resolved automatically by `scripts/detect-target.sh`:
+- **Codebase + live site** (default) — probes the deployed URL *and* a local build; finds or starts the
+  dev/preview server and fingerprint-confirms it is this project before trusting it.
+- **URL only** — no source: audit what curl sees, emit the files to add per framework guess.
+- **Browser available** — uses browser automation (e.g. Claude in Chrome) on top of curl for the
+  JS-render gap, CAPTCHA/interstitials, network headers, and the accessibility tree.
+
+1. **Detect** — `scripts/detect-target.sh` reports framework, host, deployed URL from config, dev script, and
+   which local ports are serving *this* project.
+2. **Probe** — `scripts/probe.sh` (bash + curl, no deps) runs ~40 deterministic live
    checks: bot access by UA, robots.txt per-bot verdicts and `Content-Signal`,
    sitemap/lastmod/404s, llms.txt validity + link rot, `.md` twins,
    `Accept: text/markdown` negotiation + `Vary`, JSON-LD, headings, alt text, feeds,
    `.well-known/*`, soft-404s, TTFB, caching headers.
-2. **Audit** — the skill walks a 120-check list across 6 pillars, using probe output
+3. **Audit** — the skill walks a 120-check list across 6 pillars, using probe output
    for live checks and `file:line` evidence for codebase checks. Blocking gates
    (bots blocked, JS-only shell, no sitemap, CAPTCHA on GET) cap the score at F.
-3. **Report** — fix cards in the shape `ID · Status · Evidence · Why (evidence rating) ·
+4. **Report** — fix cards in the shape `ID · Status · Evidence · Why (evidence rating) ·
    Fix (file/snippet) · Verify (command)`, ranked gates → access → weight×gap.
-4. **Fix** (`--fix`) — implements per framework (Astro, Next, Nuxt, SvelteKit, Remix,
+5. **Fix** (`--fix`) — implements per framework (Astro, Next, Nuxt, SvelteKit, Remix,
    Hugo, Jekyll, Eleventy, Docusaurus, VitePress, Mintlify) and host (Cloudflare,
    Vercel, Netlify), then re-probes. Policy decisions (train-on-me or not, WAF
    changes, marketing copy) are proposed, never applied silently.
@@ -83,8 +94,9 @@ Clone and point the agent at `skills/agent-dx-review/SKILL.md`; `AGENTS.md` does
 
 ## Layout
 ```
-scripts/probe.sh                          deterministic live checks (bash + curl)
-skills/agent-dx-review/SKILL.md           the procedure: orient → audit → report → deep → fix
+scripts/detect-target.sh                  codebase? framework? host? deployed URL? dev server running?
+scripts/probe.sh                          deterministic live checks (bash + curl); localhost-aware
+skills/agent-dx-review/SKILL.md           the procedure: resolve target → orient → audit → report → deep → fix
 skills/agent-dx-review/references/
   checklist.md                            120 checks, ladders, weights, gates, grades
   bots.md                                 crawler classes, UA table, robots.txt template, CDN gotchas
