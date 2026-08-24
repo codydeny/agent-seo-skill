@@ -82,7 +82,7 @@ git clone https://github.com/codydeny/agent-dx-harness ~/agent-dx-harness
 claude plugin marketplace add ~/agent-dx-harness
 claude plugin install agent-dx@agent-dx-harness
 ```
-Then in a new session: `/agent-dx:agent-dx-review`. (One-off without installing: `claude --plugin-dir ~/agent-dx-harness`.)
+Then in a new session: `/agent-dx:agent-dx-review`. (One-off / live development without installing: `claude --plugin-dir ~/agent-dx-harness`.) Claude Code caches the plugin per version — after pulling changes run `claude plugin marketplace update agent-dx-harness && claude plugin update agent-dx@agent-dx-harness`; it only refreshes when the version in `plugin.json` changed.
 
 **Cursor**
 ```bash

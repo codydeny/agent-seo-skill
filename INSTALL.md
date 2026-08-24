@@ -29,7 +29,7 @@ claude plugin marketplace add ~/agent-dx-harness          # registers marketplac
 claude plugin install agent-dx@agent-dx-harness
 claude plugin list | grep -A3 'agent-dx@'                 # expect: Status: ✔ enabled
 ```
-If `marketplace add` says it already exists: `claude plugin marketplace update agent-dx-harness`. If `install` says already installed: `claude plugin update agent-dx@agent-dx-harness`.
+If `marketplace add` says it already exists: `claude plugin marketplace update agent-dx-harness`. If `install` says already installed: `claude plugin update agent-dx@agent-dx-harness`. **Note:** Claude Code caches a copy per version; edits to the repo only reach the installed copy when `.claude-plugin/plugin.json` `version` changes (or via `claude plugin uninstall` + `install`). For live development use `claude --plugin-dir ~/agent-dx-harness` instead.
 Verify: `claude plugin details agent-dx@agent-dx-harness` must show `Skills (1)  agent-dx-review` (a count of 2 means a stale duplicate — reinstall).
 Tell the user: start a new session and run `/agent-dx:agent-dx-review`.
 

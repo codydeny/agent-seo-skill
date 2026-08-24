@@ -1,7 +1,7 @@
 {
   "name": "agent-dx",
   "displayName": "Agent DX Review",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Audit and fix a website's agent DX: how AI crawlers, answer engines, and agents discover, read, cite, and act on it. Live probe + codebase fixes, scored across 6 pillars.",
   "author": {
     "name": "Puneet Bhatt",
