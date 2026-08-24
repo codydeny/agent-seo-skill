@@ -1,4 +1,4 @@
-# agent-seo
+# agent-seo-skill
 
 **Make your website work for agents.** `/agent-seo:review` audits how AI crawlers,
 answer engines (ChatGPT, Claude, Perplexity, Gemini, Copilot) and user-driven agents
@@ -63,7 +63,7 @@ JSON-LD is infrastructure. The report says which is which.
 Paste this into Claude Code, Cursor, Codex, Gemini CLI, or Antigravity:
 
 ```
-Fetch and follow the instructions in https://raw.githubusercontent.com/codydeny/agent-seo/main/INSTALL.md
+Fetch and follow the instructions in https://raw.githubusercontent.com/codydeny/agent-seo-skill/main/INSTALL.md
 ```
 
 Already have a local copy? Paste this instead:
@@ -105,7 +105,7 @@ Optionally add `.agent/workflows/review.md` containing: `Read and follow .agent/
 
 **Gemini CLI**
 ```bash
-gemini extensions install https://github.com/codydeny/agent-seo
+gemini extensions install https://github.com/codydeny/agent-seo-skill
 ```
 
 **Anything else** — clone and point the agent at `skills/review/SKILL.md`; `AGENTS.md` does that for agents that read it. The probe runs standalone: `scripts/probe.sh https://example.com`.

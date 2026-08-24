@@ -1,4 +1,4 @@
-# agent-seo
+# agent-seo-skill
 
 This repository provides one capability: an **agent SEO review** for websites —
 auditing and fixing how AI crawlers, answer engines (ChatGPT, Claude, Perplexity,

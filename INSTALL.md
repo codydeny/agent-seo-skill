@@ -58,7 +58,7 @@ printf -- '---\ndescription: Audit and fix this website'"'"'s agent SEO\n---\nRe
 
 ## 6. Gemini CLI
 ```bash
-gemini extensions install ~/agent-seo || gemini extensions install https://github.com/codydeny/agent-seo
+gemini extensions install ~/agent-seo || gemini extensions install https://github.com/codydeny/agent-seo-skill
 ```
 
 ## 7. Report
