@@ -1,4 +1,4 @@
-# Agent DX checklist — 120 checks across 6 pillars
+# Agent SEO checklist — 120 checks across 6 pillars
 
 Each check: **ID** · what to detect (codebase and/or live) · score ladder (0→max, partial credit for each rung) · fix · verify.
 Weight column is the pillar weight; within a pillar, checks are equal unless marked ★ (double) or ☆ (half).

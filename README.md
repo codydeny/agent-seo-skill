@@ -1,6 +1,6 @@
-# agent-dx-harness
+# agent-seo
 
-**Make your website work for agents.** `/agent-dx-review` audits how AI crawlers,
+**Make your website work for agents.** `/review` audits how AI crawlers,
 answer engines (ChatGPT, Claude, Perplexity, Gemini, Copilot) and user-driven agents
 discover, read, cite, and act on a site — then fixes it in the codebase.
 
@@ -12,12 +12,12 @@ twins *and* a robots.txt that blocks ClaudeBot). This harness finds both.
 ## What it does
 
 ```
-/agent-dx-review                                      # in a site repo: detects framework, deployed URL, dev server
-/agent-dx-review --url https://example.com            # audit a deployed site (works with no codebase too)
-/agent-dx-review --url http://localhost:4321          # audit a local build (edge checks auto-SKIP)
-/agent-dx-review --fix                                # audit, then implement fixes in this repo, re-verify
-/agent-dx-review --deep --write                       # + agent-task walkthrough, saves AGENT-DX.md
-/agent-dx-review status                               # re-probe and diff against the ledger
+/review                                      # in a site repo: detects framework, deployed URL, dev server
+/review --url https://example.com            # audit a deployed site (works with no codebase too)
+/review --url http://localhost:4321          # audit a local build (edge checks auto-SKIP)
+/review --fix                                # audit, then implement fixes in this repo, re-verify
+/review --deep --write                       # + agent-task walkthrough, saves AGENT-SEO.md
+/review status                               # re-probe and diff against the ledger
 ```
 
 Three modes, resolved automatically by `scripts/detect-target.sh`:
@@ -63,13 +63,13 @@ JSON-LD is infrastructure. The report says which is which.
 Paste this into Claude Code, Cursor, Codex, Gemini CLI, or Antigravity:
 
 ```
-Fetch and follow the instructions in https://raw.githubusercontent.com/codydeny/agent-dx-harness/main/INSTALL.md
+Fetch and follow the instructions in https://raw.githubusercontent.com/codydeny/agent-seo/main/INSTALL.md
 ```
 
 Already have a local copy? Paste this instead:
 
 ```
-Read and follow ~/agent-dx-harness/INSTALL.md — install for every agent harness on this machine and verify each one.
+Read and follow ~/agent-seo/INSTALL.md — install for every agent harness on this machine and verify each one.
 ```
 
 `INSTALL.md` detects which harnesses are present, installs for each, verifies, and reports.
@@ -78,50 +78,50 @@ Read and follow ~/agent-dx-harness/INSTALL.md — install for every agent harnes
 
 **Claude Code**
 ```bash
-git clone https://github.com/codydeny/agent-dx-harness ~/agent-dx-harness
-claude plugin marketplace add ~/agent-dx-harness
-claude plugin install agent-dx@agent-dx-harness
+git clone https://github.com/codydeny/agent-seo ~/agent-seo
+claude plugin marketplace add ~/agent-seo
+claude plugin install agent-seo@agent-seo
 ```
-Then in a new session: `/agent-dx:agent-dx-review`. (One-off / live development without installing: `claude --plugin-dir ~/agent-dx-harness`.) Claude Code caches the plugin per version — after pulling changes run `claude plugin marketplace update agent-dx-harness && claude plugin update agent-dx@agent-dx-harness`; it only refreshes when the version in `plugin.json` changed.
+Then in a new session: `/agent-seo:review`. (One-off / live development without installing: `claude --plugin-dir ~/agent-seo`.) Claude Code caches the plugin per version — after pulling changes run `claude plugin marketplace update agent-seo && claude plugin update agent-seo@agent-seo`; it only refreshes when the version in `plugin.json` changed.
 
 **Cursor**
 ```bash
-git clone https://github.com/codydeny/agent-dx-harness ~/agent-dx-harness
-ln -sfn ~/agent-dx-harness ~/.cursor/plugins/local/agent-dx
+git clone https://github.com/codydeny/agent-seo ~/agent-seo
+ln -sfn ~/agent-seo ~/.cursor/plugins/local/agent-seo
 ```
 Reload Cursor ("Developer: Reload Window"); `skills/` is auto-discovered.
 
 **Codex**
 ```bash
-git clone https://github.com/codydeny/agent-dx-harness ~/.codex/agent-dx-harness
-mkdir -p ~/.agents/skills && ln -s ~/.codex/agent-dx-harness/skills/agent-dx-review ~/.agents/skills/agent-dx-review
+git clone https://github.com/codydeny/agent-seo ~/.codex/agent-seo
+mkdir -p ~/.agents/skills && ln -s ~/.codex/agent-seo/skills/review ~/.agents/skills/review
 ```
 
 **Antigravity** (per project)
 ```bash
-mkdir -p .agent/skills && ln -s ~/agent-dx-harness/skills/agent-dx-review .agent/skills/agent-dx-review
+mkdir -p .agent/skills && ln -s ~/agent-seo/skills/review .agent/skills/review
 ```
-Optionally add `.agent/workflows/agent-dx-review.md` containing: `Read and follow .agent/skills/agent-dx-review/SKILL.md. Arguments: $ARGUMENTS`.
+Optionally add `.agent/workflows/review.md` containing: `Read and follow .agent/skills/review/SKILL.md. Arguments: $ARGUMENTS`.
 
 **Gemini CLI**
 ```bash
-gemini extensions install https://github.com/codydeny/agent-dx-harness
+gemini extensions install https://github.com/codydeny/agent-seo
 ```
 
-**Anything else** — clone and point the agent at `skills/agent-dx-review/SKILL.md`; `AGENTS.md` does that for agents that read it. The probe runs standalone: `scripts/probe.sh https://example.com`.
+**Anything else** — clone and point the agent at `skills/review/SKILL.md`; `AGENTS.md` does that for agents that read it. The probe runs standalone: `scripts/probe.sh https://example.com`.
 
 ### Uninstall
 ```bash
-claude plugin uninstall agent-dx@agent-dx-harness && claude plugin marketplace remove agent-dx-harness
-rm ~/.cursor/plugins/local/agent-dx ~/.agents/skills/agent-dx-review
+claude plugin uninstall agent-seo@agent-seo && claude plugin marketplace remove agent-seo
+rm ~/.cursor/plugins/local/agent-seo ~/.agents/skills/review
 ```
 
 ## Layout
 ```
 scripts/detect-target.sh                  codebase? framework? host? deployed URL? dev server running?
 scripts/probe.sh                          deterministic live checks (bash + curl); localhost-aware
-skills/agent-dx-review/SKILL.md           the procedure: resolve target → orient → audit → report → deep → fix
-skills/agent-dx-review/references/
+skills/review/SKILL.md           the procedure: resolve target → orient → audit → report → deep → fix
+skills/review/references/
   checklist.md                            120 checks, ladders, weights, gates, grades
   bots.md                                 crawler classes, UA table, robots.txt template, CDN gotchas
   frameworks.md                           how to implement each artifact per framework/host

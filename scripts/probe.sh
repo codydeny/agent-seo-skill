@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# agent-dx probe — deterministic live checks of a site's agent-facing surface.
+# agent-seo probe — deterministic live checks of a site's agent-facing surface.
 # Usage: probe.sh <base-url> [--json] [--pages N]
 # Requires: bash, curl. Optional: python3 (JSON-LD parsing), xmllint.
 # Output: one line per check: <id>\t<status>\t<detail>   status ∈ PASS|WARN|FAIL|INFO
@@ -12,7 +12,7 @@ while [ $# -gt 0 ]; do case "$1" in --pages) PAGES="$2"; shift;; esac; shift; do
 
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 LOCAL=0; echo "$BASE" | grep -qE '^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])' && LOCAL=1
-UA_DEFAULT="Mozilla/5.0 (compatible; agent-dx-probe/0.1)"
+UA_DEFAULT="Mozilla/5.0 (compatible; agent-seo-probe/0.1)"
 CURL="curl -sS -L --max-time 20 --max-redirs 5"
 
 out() { printf '%s\t%s\t%s\n' "$1" "$2" "$3"; }
@@ -22,7 +22,7 @@ fetch() { # fetch <url> <outfile> [extra curl args...] -> prints "code content-t
 }
 has_tag() { grep -qiE "$1" "$2"; }
 
-echo "# agent-dx probe of $BASE — $(date -u +%Y-%m-%dT%H:%MZ)"
+echo "# agent-seo probe of $BASE — $(date -u +%Y-%m-%dT%H:%MZ)"
 [ "$LOCAL" = 1 ] && echo "# LOCAL target: edge-dependent checks (bot access/WAF, HSTS, TTFB, CDN-managed robots, Cloudflare md conversion) are SKIP — re-run against the deployed URL for those"
 
 # ---------- 1. Home page basics ----------
@@ -155,6 +155,6 @@ if [ "$(cat "$T/_llms_txt.code" 2>/dev/null)" = 200 ]; then
 fi
 
 # ---------- 8. 404 behaviour ----------
-c=$($CURL -o "$T/404.html" -w '%{http_code}' "$BASE/agent-dx-probe-$(date +%s)-does-not-exist" 2>/dev/null)
+c=$($CURL -o "$T/404.html" -w '%{http_code}' "$BASE/agent-seo-probe-$(date +%s)-does-not-exist" 2>/dev/null)
 [ "$c" = 404 ] && out http.404 PASS "real 404" || out http.404 FAIL "missing page returns $c (soft-404 — every bad URL looks like content)"
 echo "# done"

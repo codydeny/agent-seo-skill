@@ -1,16 +1,16 @@
-# Installing agent-dx-harness (for agents to follow)
+# Installing agent-seo (for agents to follow)
 
 You are a coding agent installing this harness for the user. Do every step, verify, and report what you did. Do not skip verification.
 
 ## 0. Get the repo
-If `~/agent-dx-harness` already exists and contains `skills/agent-dx-review/SKILL.md`, use it (`cd ~/agent-dx-harness && git pull` if it is a clone). Otherwise:
+If `~/agent-seo` already exists and contains `skills/review/SKILL.md`, use it (`cd ~/agent-seo && git pull` if it is a clone). Otherwise:
 ```bash
-git clone https://github.com/codydeny/agent-dx-harness ~/agent-dx-harness
+git clone https://github.com/codydeny/agent-seo ~/agent-seo
 ```
-If the clone fails (private/offline), ask the user for the path to their copy and use that instead of `~/agent-dx-harness` below.
+If the clone fails (private/offline), ask the user for the path to their copy and use that instead of `~/agent-seo` below.
 ```bash
-chmod +x ~/agent-dx-harness/scripts/*.sh
-bash ~/agent-dx-harness/scripts/probe.sh https://example.com --pages 1 | head -3   # must print "# agent-dx probe of …"
+chmod +x ~/agent-seo/scripts/*.sh
+bash ~/agent-seo/scripts/probe.sh https://example.com --pages 1 | head -3   # must print "# agent-seo probe of …"
 ```
 
 ## 1. Detect which agent harnesses are present
@@ -25,40 +25,40 @@ Install for every harness found (and any the user names).
 
 ## 2. Claude Code
 ```bash
-claude plugin marketplace add ~/agent-dx-harness          # registers marketplace "agent-dx-harness" (directory source)
-claude plugin install agent-dx@agent-dx-harness
-claude plugin list | grep -A3 'agent-dx@'                 # expect: Status: ✔ enabled
+claude plugin marketplace add ~/agent-seo          # registers marketplace "agent-seo" (directory source)
+claude plugin install agent-seo@agent-seo
+claude plugin list | grep -A3 'agent-seo@'                 # expect: Status: ✔ enabled
 ```
-If `marketplace add` says it already exists: `claude plugin marketplace update agent-dx-harness`. If `install` says already installed: `claude plugin update agent-dx@agent-dx-harness`. **Note:** Claude Code caches a copy per version; edits to the repo only reach the installed copy when `.claude-plugin/plugin.json` `version` changes (or via `claude plugin uninstall` + `install`). For live development use `claude --plugin-dir ~/agent-dx-harness` instead.
-Verify: `claude plugin details agent-dx@agent-dx-harness` must show `Skills (1)  agent-dx-review` (a count of 2 means a stale duplicate — reinstall).
-Tell the user: start a new session and run `/agent-dx:agent-dx-review`.
+If `marketplace add` says it already exists: `claude plugin marketplace update agent-seo`. If `install` says already installed: `claude plugin update agent-seo@agent-seo`. **Note:** Claude Code caches a copy per version; edits to the repo only reach the installed copy when `.claude-plugin/plugin.json` `version` changes (or via `claude plugin uninstall` + `install`). For live development use `claude --plugin-dir ~/agent-seo` instead.
+Verify: `claude plugin details agent-seo@agent-seo` must show `Skills (1)  review` (a count of 2 means a stale duplicate — reinstall).
+Tell the user: start a new session and run `/agent-seo:review`.
 
 ## 3. Cursor
 ```bash
 mkdir -p ~/.cursor/plugins/local
-ln -sfn ~/agent-dx-harness ~/.cursor/plugins/local/agent-dx
-ls -la ~/.cursor/plugins/local/agent-dx/.cursor-plugin/plugin.json   # must resolve
+ln -sfn ~/agent-seo ~/.cursor/plugins/local/agent-seo
+ls -la ~/.cursor/plugins/local/agent-seo/.cursor-plugin/plugin.json   # must resolve
 ```
 Tell the user: reload Cursor ("Developer: Reload Window") and check the Customize page; skills/commands are auto-discovered from `.cursor-plugin/plugin.json`.
 
 ## 4. Codex
 ```bash
 mkdir -p ~/.agents/skills
-ln -sfn ~/agent-dx-harness/skills/agent-dx-review ~/.agents/skills/agent-dx-review
-ls -la ~/.agents/skills/agent-dx-review/SKILL.md
+ln -sfn ~/agent-seo/skills/review ~/.agents/skills/review
+ls -la ~/.agents/skills/review/SKILL.md
 ```
 Restart Codex.
 
 ## 5. Antigravity (per project)
 ```bash
 mkdir -p .agent/skills .agent/workflows
-ln -sfn ~/agent-dx-harness/skills/agent-dx-review .agent/skills/agent-dx-review
-printf -- '---\ndescription: Audit and fix this website'"'"'s agent DX\n---\nRead and follow .agent/skills/agent-dx-review/SKILL.md exactly. Arguments: $ARGUMENTS\n' > .agent/workflows/agent-dx-review.md
+ln -sfn ~/agent-seo/skills/review .agent/skills/review
+printf -- '---\ndescription: Audit and fix this website'"'"'s agent SEO\n---\nRead and follow .agent/skills/review/SKILL.md exactly. Arguments: $ARGUMENTS\n' > .agent/workflows/review.md
 ```
 
 ## 6. Gemini CLI
 ```bash
-gemini extensions install ~/agent-dx-harness || gemini extensions install https://github.com/codydeny/agent-dx-harness
+gemini extensions install ~/agent-seo || gemini extensions install https://github.com/codydeny/agent-seo
 ```
 
 ## 7. Report
@@ -66,7 +66,7 @@ List each harness: installed / skipped (why), and the exact command the user sho
 
 ## Uninstall
 ```bash
-claude plugin uninstall agent-dx@agent-dx-harness; claude plugin marketplace remove agent-dx-harness
-rm -f ~/.cursor/plugins/local/agent-dx ~/.agents/skills/agent-dx-review
-gemini extensions uninstall agent-dx 2>/dev/null
+claude plugin uninstall agent-seo@agent-seo; claude plugin marketplace remove agent-seo
+rm -f ~/.cursor/plugins/local/agent-seo ~/.agents/skills/review
+gemini extensions uninstall agent-seo 2>/dev/null
 ```

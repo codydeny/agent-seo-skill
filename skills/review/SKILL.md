@@ -1,10 +1,10 @@
 ---
-name: agent-dx-review
+name: review
 description: Use when the user wants their website / landing page / docs site to be discoverable, readable, citable, and operable by AI agents and LLM crawlers (ChatGPT, Claude, Perplexity, Gemini, Copilot, coding agents) — "agent DX", "AEO/GEO", "llms.txt", "markdown for agents", "agent-ready". Audits the live site AND the codebase, scores it across 6 pillars with blocking gates, then implements fixes in the repo and re-verifies.
 argument-hint: "[--url https://site|http://localhost:PORT] [--fix] [--pillar A-F] [--deep] [--write] | status"
 ---
 
-# Agent DX review — make a website work for agents
+# Agent SEO review — make a website work for agents
 
 You are auditing and improving a **website's agent-facing surface**: what AI crawlers, answer engines, and user-driven agents see when they hit this site, and what they can do with it. You have the codebase in front of you, so you can both *detect* and *fix*. Detection is deterministic (a bash probe you cannot argue with); you supply judgment, code changes, and honest reporting.
 
@@ -15,15 +15,15 @@ Arguments: `$ARGUMENTS`
 - `--fix` — after the audit, implement fixes in the codebase (default: audit + report only; in fix mode still stop for anything listed under **Never do silently**). Ignored in URL-only mode.
 - `--pillar X` — restrict to one pillar (A–F).
 - `--deep` — also run the agent-task walkthrough (§4) and off-site presence review.
-- `--write` — save the report as `AGENT-DX.md` at the repo root (default: print). In `--fix` mode always write it; it doubles as the status ledger.
-- `status` — if `AGENT-DX.md` exists, re-probe, diff against the ledger, and report what moved. Stop.
+- `--write` — save the report as `AGENT-SEO.md` at the repo root (default: print). In `--fix` mode always write it; it doubles as the status ledger.
+- `status` — if `AGENT-SEO.md` exists, re-probe, diff against the ledger, and report what moved. Stop.
 
 ## Resolve the target (always first)
 Set `$HARNESS` to this plugin's root, then run `bash "$HARNESS/scripts/detect-target.sh" .`:
 - Claude Code: `HARNESS="${CLAUDE_PLUGIN_ROOT}"`
-- Cursor (local plugin): `HARNESS=~/.cursor/plugins/local/agent-dx`
+- Cursor (local plugin): `HARNESS=~/.cursor/plugins/local/agent-seo`
 - Codex / Antigravity (skill symlinked): `HARNESS="$(cd "$(dirname "$(readlink -f <path-to-this-SKILL.md>)")/../.." && pwd)"`
-- Anything else: the repo checkout that contains this file, two directories up (`../../` from `skills/agent-dx-review/`).
+- Anything else: the repo checkout that contains this file, two directories up (`../../` from `skills/review/`).
 Sanity check: `ls "$HARNESS/scripts/probe.sh"` must succeed before you continue; if not, ask the user where the harness is checked out. It prints `codebase=`, `framework=`, `host=`, `deployed_url=`, `dev_script=`, `expected_port=`, `running_local=`, and a `local_fingerprint` per open port. Then pick a mode:
 
 **Mode 1 — codebase + live site (the normal case).** `codebase=yes`. Probe **both**:
@@ -71,7 +71,7 @@ Do not pad. A personal blog will legitimately N/A most of pillar E; say that rat
 ## 3. Report
 Emit exactly:
 ```
-# Agent DX review — <site> (<date>)
+# Agent SEO review — <site> (<date>)
 Framework/host: … · Site type: … · Probe: <url> (<n> pages sampled) · Mode: audit|fix
 
 ## Score: NN/100 (<grade>)   Gates: <passed | FAILED: A1, B1>
@@ -98,7 +98,7 @@ Verify: scripts/probe.sh <url> | grep robots.search
 - Bing Webmaster Tools / Search Console / Brave submit (A18)
 - CDN settings I can't change from the repo: …
 ```
-If `--write` or `--fix`: save as `AGENT-DX.md` with a `## Ledger` table (`ID | status | last verified <date> | verify command`) at the end.
+If `--write` or `--fix`: save as `AGENT-SEO.md` with a `## Ledger` table (`ID | status | last verified <date> | verify command`) at the end.
 
 ## 4. Deep pass (`--deep`)
 1. **Agent-task walkthrough**: pick 3 tasks an agent would attempt (e.g. "What does this company do and what does it cost?", "Find the API quickstart", "Sign up / contact sales"). For each, fetch only with `curl` (no browser) plus `r.jina.ai` and read what comes back. Note every point where the answer is missing, ambiguous, JS-gated, or contradicted elsewhere. Each becomes a fix card under D or F.
@@ -112,7 +112,7 @@ Work the ranked fix cards top-down. For each:
 2. Implement using `references/frameworks.md` for this framework/host. Generate artifacts **from the content source at build/request time**; never commit hand-written llms.txt/sitemap copies. Keep one data source for facts that appear in several places (pricing, org identity → JSON-LD, llms.txt, OG, page copy).
 3. Build locally; run the dev server; `curl` the artifact (content-type, status, body head). Mark `implemented`.
 4. If the user deploys (or preview URLs exist), re-run the probe and mark `validated`; otherwise leave `implemented` with the verify command in the ledger.
-5. Update `AGENT-DX.md` ledger and the fix card's Status. Commit per logical group with a message naming the check IDs (e.g. `agent-dx: B4 B7 markdown twins + alternate links`) — only if the user asked for commits.
+5. Update `AGENT-SEO.md` ledger and the fix card's Status. Commit per logical group with a message naming the check IDs (e.g. `agent-seo: B4 B7 markdown twins + alternate links`) — only if the user asked for commits.
 
 Minimum viable set for a content site with nothing in place (in order): A2 robots policy (ask) → A5/A6 sitemap+lastmod → B2/B3 llms.txt+full → B4/B7 md twins + alternate link → C1–C3 JSON-LD → A16 feed → A15 security.txt → B5 negotiation (if host allows) → D1 definitional homepage sentence (propose) → F7 observability instructions.
 

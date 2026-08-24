@@ -81,7 +81,7 @@ Sitemap: https://example.com/sitemap.xml
 "Train on me too" variant: drop the training block and set `ai-train=yes`.
 
 ## Cloudflare gotchas
-- Managed robots.txt ("block AI training") injects a block that Disallows GPTBot, ClaudeBot, Google-Extended, CCBot, Amazonbot, Bytespider, Applebot-Extended, meta-externalagent and adds `Content-Signal: search=yes,ai-train=no` — but **no `ai-input`**. It lives outside your repo; document it in `AGENT-DX.md`.
+- Managed robots.txt ("block AI training") injects a block that Disallows GPTBot, ClaudeBot, Google-Extended, CCBot, Amazonbot, Bytespider, Applebot-Extended, meta-externalagent and adds `Content-Signal: search=yes,ai-train=no` — but **no `ai-input`**. It lives outside your repo; document it in `AGENT-SEO.md`.
 - AI Crawl Control "Block AI bots" one-click blocks *retrieval and user* bots too. New default from **15 Sept 2026**: Agent bots blocked on ad-monetised pages.
 - Markdown for Agents auto-sets `Content-Signal: ai-train=yes, search=yes, ai-input=yes` unless origin sends its own header — set yours.
 - Bot Fight Mode / Super Bot Fight Mode challenges break ChatGPT-User/Claude-User. WAF skip rule: `(cf.bot_management.verified_bot and cf.verified_bot_category in {"AI Assistant" "AI Search" "Search Engine Crawler"})`.

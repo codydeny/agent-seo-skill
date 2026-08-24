@@ -103,7 +103,7 @@ Headers (site-wide): `Link: </llms.txt>; rel="llms-txt", </llms-full.txt>; rel="
 - **Astro**: `public/robots.txt` or `astro-robots-txt`.
 - **Hugo**: `enableRobotsTXT = true` + `layouts/robots.txt`.
 - **Others**: static file in `public/` / `static/`.
-- **Cloudflare managed robots.txt** is prepended outside the repo — record it in `AGENT-DX.md` and make sure the repo file doesn't contradict it.
+- **Cloudflare managed robots.txt** is prepended outside the repo — record it in `AGENT-SEO.md` and make sure the repo file doesn't contradict it.
 
 ## 4. Sitemap & feeds
 - **Next.js**: `app/sitemap.ts` (`lastModified` from content `updatedAt`); `generateSitemaps()` for >50k. `next-sitemap` only for `output:'export'`.
