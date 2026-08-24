@@ -19,7 +19,12 @@ Arguments: `$ARGUMENTS`
 - `status` — if `AGENT-DX.md` exists, re-probe, diff against the ledger, and report what moved. Stop.
 
 ## Resolve the target (always first)
-Run `bash "$HARNESS/scripts/detect-target.sh" .` where `$HARNESS` is this plugin's root (`${CLAUDE_PLUGIN_ROOT}` in Claude Code; otherwise the directory two levels above this SKILL.md). It prints `codebase=`, `framework=`, `host=`, `deployed_url=`, `dev_script=`, `expected_port=`, `running_local=`, and a `local_fingerprint` per open port. Then pick a mode:
+Set `$HARNESS` to this plugin's root, then run `bash "$HARNESS/scripts/detect-target.sh" .`:
+- Claude Code: `HARNESS="${CLAUDE_PLUGIN_ROOT}"`
+- Cursor (local plugin): `HARNESS=~/.cursor/plugins/local/agent-dx`
+- Codex / Antigravity (skill symlinked): `HARNESS="$(cd "$(dirname "$(readlink -f <path-to-this-SKILL.md>)")/../.." && pwd)"`
+- Anything else: the repo checkout that contains this file, two directories up (`../../` from `skills/agent-dx-review/`).
+Sanity check: `ls "$HARNESS/scripts/probe.sh"` must succeed before you continue; if not, ask the user where the harness is checked out. It prints `codebase=`, `framework=`, `host=`, `deployed_url=`, `dev_script=`, `expected_port=`, `running_local=`, and a `local_fingerprint` per open port. Then pick a mode:
 
 **Mode 1 — codebase + live site (the normal case).** `codebase=yes`. Probe **both**:
 - the deployed URL (`--url`, else `deployed_url=` from config; if neither, ask once) — this is where access/WAF/CDN/TTFB checks are real;
