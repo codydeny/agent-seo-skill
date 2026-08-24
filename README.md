@@ -59,38 +59,62 @@ JSON-LD is infrastructure. The report says which is which.
 
 ## Install
 
-### Claude Code
-```
-/plugin marketplace add codydeny/agent-dx-harness
-/plugin install agent-dx@agent-dx-harness
-```
-Local: `claude --plugin-dir ~/agent-dx-harness`, then `/agent-dx:agent-dx-review`.
+### Auto-install (paste into your agent)
+Paste this into Claude Code, Cursor, Codex, Gemini CLI, or Antigravity:
 
-### Cursor
+```
+Fetch and follow the instructions in https://raw.githubusercontent.com/codydeny/agent-dx-harness/main/INSTALL.md
+```
+
+Already have a local copy? Paste this instead:
+
+```
+Read and follow ~/agent-dx-harness/INSTALL.md — install for every agent harness on this machine and verify each one.
+```
+
+`INSTALL.md` detects which harnesses are present, installs for each, verifies, and reports.
+
+### Manual install
+
+**Claude Code**
 ```bash
-git clone https://github.com/codydeny/agent-dx-harness
-ln -sfn "$(pwd)/agent-dx-harness" ~/.cursor/plugins/local/agent-dx
+git clone https://github.com/codydeny/agent-dx-harness ~/agent-dx-harness
+claude plugin marketplace add ~/agent-dx-harness
+claude plugin install agent-dx@agent-dx-harness
 ```
-Reload; `skills/` and `commands/` are auto-discovered.
+Then in a new session: `/agent-dx:agent-dx-review`. (One-off without installing: `claude --plugin-dir ~/agent-dx-harness`.)
 
-### Codex
-```
-Fetch and follow instructions from https://raw.githubusercontent.com/codydeny/agent-dx-harness/main/.codex/INSTALL.md
-```
-
-### Antigravity
+**Cursor**
 ```bash
-mkdir -p .agent/skills && ln -s "$(pwd)/agent-dx-harness/skills/agent-dx-review" .agent/skills/agent-dx-review
+git clone https://github.com/codydeny/agent-dx-harness ~/agent-dx-harness
+ln -sfn ~/agent-dx-harness ~/.cursor/plugins/local/agent-dx
 ```
-Optionally copy `commands/agent-dx-review.md` to `.agent/workflows/` and point it at `.agent/skills/agent-dx-review/SKILL.md`.
+Reload Cursor ("Developer: Reload Window"); `skills/` is auto-discovered.
 
-### Gemini CLI
+**Codex**
+```bash
+git clone https://github.com/codydeny/agent-dx-harness ~/.codex/agent-dx-harness
+mkdir -p ~/.agents/skills && ln -s ~/.codex/agent-dx-harness/skills/agent-dx-review ~/.agents/skills/agent-dx-review
+```
+
+**Antigravity** (per project)
+```bash
+mkdir -p .agent/skills && ln -s ~/agent-dx-harness/skills/agent-dx-review .agent/skills/agent-dx-review
+```
+Optionally add `.agent/workflows/agent-dx-review.md` containing: `Read and follow .agent/skills/agent-dx-review/SKILL.md. Arguments: $ARGUMENTS`.
+
+**Gemini CLI**
 ```bash
 gemini extensions install https://github.com/codydeny/agent-dx-harness
 ```
 
-### Anything else
-Clone and point the agent at `skills/agent-dx-review/SKILL.md`; `AGENTS.md` does that for agents that read it. The probe runs standalone: `scripts/probe.sh https://example.com`.
+**Anything else** — clone and point the agent at `skills/agent-dx-review/SKILL.md`; `AGENTS.md` does that for agents that read it. The probe runs standalone: `scripts/probe.sh https://example.com`.
+
+### Uninstall
+```bash
+claude plugin uninstall agent-dx@agent-dx-harness && claude plugin marketplace remove agent-dx-harness
+rm ~/.cursor/plugins/local/agent-dx ~/.agents/skills/agent-dx-review
+```
 
 ## Layout
 ```
@@ -102,7 +126,6 @@ skills/agent-dx-review/references/
   bots.md                                 crawler classes, UA table, robots.txt template, CDN gotchas
   frameworks.md                           how to implement each artifact per framework/host
   evidence.md                             proven vs hype, numbers you may quote
-commands/agent-dx-review.md               slash-command wrapper (Claude Code, Cursor)
 AGENTS.md                                 entry point for Codex / Antigravity / others
 .claude-plugin/ .cursor-plugin/ .codex/ gemini-extension.json   install glue
 ```

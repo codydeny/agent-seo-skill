@@ -20,6 +20,5 @@
     "schema",
     "mcp"
   ],
-  "skills": "./skills/",
-  "commands": "./commands/"
+  "skills": "./skills/"
 }
